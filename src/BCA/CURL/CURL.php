@@ -63,10 +63,10 @@ class CURL
     /**
      * Simple Call Front Controller
      *
-     * @param string $method    Valid HTTP method
-     * @param array  $arguments Array of query parameters
+     * @param array $params  Array of query parameters.
+     * @param array $options Associative array cURL options.
      *
-     * @return mixed
+     * @return array
      */
     public function __call($method, array $arguments)
     {
@@ -82,10 +82,10 @@ class CURL
     /**
      * Get File From FTP Server
      *
-     * @param string $url       URL of remote FTP host
-     * @param string $file_path Path to file on remote host
-     * @param string $username  FTP username
-     * @param string $password  FTP password
+     * @param string $url       URL of remote FTP host.
+     * @param string $file_path Path to file on remote host.
+     * @param string $username  FTP username.
+     * @param string $password  FTP password.
      *
      * @return mixed
      */
@@ -120,8 +120,8 @@ class CURL
     /**
      * POST HTTP Request
      *
-     * @param array $params  Array of query parameters
-     * @param array $options Array of cURL options
+     * @param array $params  Array of query parameters.
+     * @param array $options Array of cURL options.
      *
      * @return mixed
      */
@@ -146,8 +146,8 @@ class CURL
     /**
      * PUT HTTP Request
      *
-     * @param array $params  Array of query parameters
-     * @param array $options Array of cURL options
+     * @param array $params  Array of query parameters.
+     * @param array $options Array of cURL options.
      *
      * @return mixed
      */
@@ -173,8 +173,8 @@ class CURL
     /**
      * DELETE HTTP Request
      *
-     * @param array $params  Array of query parameters
-     * @param array $options Array of cURL options
+     * @param array $params  Array of query parameters.
+     * @param array $options Array of cURL options.
      *
      * @return mixed
      */
@@ -198,7 +198,7 @@ class CURL
     /**
      * Set Session Cookies
      *
-     * @param array $params Associative array of cookie keys and values
+     * @param array $params Associative array of cookie keys and values.
      *
      * @return self
      */
@@ -216,8 +216,8 @@ class CURL
     /**
      * Set HTTP Header
      *
-     * @param string $header  Key of HTTP header
-     * @param string $content Value of HTTP header
+     * @param string $header  Key of HTTP header.
+     * @param string $content Value of HTTP header.
      *
      * @return self
      */
@@ -231,7 +231,7 @@ class CURL
     /**
      * Set HTTP Method
      *
-     * @param string $method Valid HTTP method
+     * @param string $method Valid HTTP method.
      *
      * @return self
      */
@@ -245,9 +245,9 @@ class CURL
     /**
      * Set HTTP username and password
      *
-     * @param string $username Username
-     * @param string $password Password
-     * @param string $type     Any valid value for CURLOPT_HTTPAUTH
+     * @param string $username Username.
+     * @param string $password Password.
+     * @param string $type     Any valid value for CURLOPT_HTTPAUTH.
      *
      * @return self
      */
@@ -262,10 +262,10 @@ class CURL
     /**
      * Set Proxy Server
      *
-     * @param string  $url      URL of proxy server
-     * @param integer $port     Port number of proxy server
-     * @param string  $username Proxy username
-     * @param string  $password Proxy password
+     * @param string  $url      URL of proxy server, if required.
+     * @param integer $port     Port number of proxy server, if required.
+     * @param string  $username Proxy username, if required.
+     * @param string  $password Proxy password, if required.
      *
      * @return self
      */
@@ -282,9 +282,9 @@ class CURL
     /**
      * Set SSL Options
      *
-     * @param boolean $verify_peer  Require a valid certificate
-     * @param integer $verify_host  Require a hostname match of certificate
-     * @param string  $path_to_cert Local path to certificate(s) file
+     * @param boolean $verify_peer  Require a valid certificate.
+     * @param integer $verify_host  Require a hostname match of certificate.
+     * @param string  $path_to_cert Local path to certificate(s) file.
      *
      * @return self
      */
@@ -307,8 +307,8 @@ class CURL
     /**
      * Set cURL Option
      *
-     * @param string $code  Key of cURL option to set or override
-     * @param string $value New value of cURL option
+     * @param string $code  Key of cURL option to set or override.
+     * @param string $value New value of cURL option.
      *
      * @return self
      */
@@ -451,7 +451,7 @@ class CURL
     /**
      * Start cURL Session
      *
-     * @param string $url Valid URL resource
+     * @param string $url Valid URL resource.
      *
      * @return self
      */
