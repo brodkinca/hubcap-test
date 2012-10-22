@@ -8,7 +8,6 @@
  * @category  Library
  * @package   BCA/CURL
  * @author    Brodkin CyberArts <support@brodkinca.com>
- * @author    Philip Sturgeon <email@philsturgeon.co.uk>
  * @copyright 2012 Brodkin CyberArts.
  * @license   All rights reserved.
  * @version   GIT: $Id$
