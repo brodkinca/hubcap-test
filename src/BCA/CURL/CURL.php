@@ -17,7 +17,7 @@
 namespace BCA\CURL;
 
 /**
- * cURL Class
+ * cURL Request Class
  *
  * Work with remote servers via cURL much easier than using the native PHP bindings.
  *
