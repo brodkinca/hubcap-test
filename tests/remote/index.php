@@ -17,7 +17,7 @@
  */
 
 if (isset($_GET['http_code'])) {
-    $http_code = $_GET['http_code'];
+    $http_code = (int) $_GET['http_code'];
 } else {
     $http_code = 200;
 }
