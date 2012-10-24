@@ -101,4 +101,26 @@ class Response
         echo "</pre>";
     }
 
+    /**
+     * HTTP Status Code of Response
+     *
+     * @return int
+     */
+    public function status()
+    {
+        return $this->_info['http_code'];
+    }
+
+    /**
+     * Was Request Successful
+     *
+     * @return boolean
+     */
+    public function success()
+    {
+        $status_code = substr($this->status(), 0, 1);
+
+        return ($status_code === '2' || $status_code === '3') ? true : false;
+    }
+
 }

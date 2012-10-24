@@ -30,7 +30,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
 {
     protected $object;
     protected $dataResponse = 'foobar';
-    protected $dataInfo = array('foo'=>'bar', 'aaa'=>111);
+    protected $dataInfo = array('foo'=>'bar', 'http_code'=>500);
 
     /**
      * Setup Each Test
@@ -48,7 +48,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     public function test__get()
     {
         $this->assertSame('bar', $this->object->foo);
-        $this->assertSame(111, $this->object->aaa);
+        $this->assertSame(500, $this->object->http_code);
     }
 
     /**
@@ -66,5 +66,26 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->expectOutputRegex("/debug/i");
         $this->assertNull($this->object->debug());
+    }
+
+    /**
+     * @covers BCA\CURL\Response::status
+     */
+    public function test_status()
+    {
+        $this->assertSame(500, $this->object->status());
+    }
+
+    /**
+     * @covers BCA\CURL\Response::success
+     */
+    public function test_success()
+    {
+        $this->assertFalse($this->object->success());
+
+        $info = $this->dataInfo;
+        $info['http_code'] = 200;
+        $response = new Response($this->dataResponse, $info);
+        $this->assertTrue($response->success());
     }
 }
