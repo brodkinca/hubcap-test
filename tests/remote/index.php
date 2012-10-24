@@ -17,8 +17,11 @@
  */
 
 if (isset($_GET['http_code'])) {
-    $http_code = $_GET['http_code'];
-    header("HTTP/1.0 $http_code Foobar");
+    if ($_GET['http_code'] == 404) {
+        header("HTTP/1.0 404 Not Found");
+    } elseif ($_GET['http_code'] == 500) {
+        header("HTTP/1.0 500 Internal Server Error");
+    }
 }
 
 header('Content-Type: application/json');
