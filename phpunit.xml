@@ -10,6 +10,9 @@
          syntaxCheck="true"
          bootstrap="tests/bootstrap.php"
 >
+    <php>
+        <const name="REMOTE_TEST_SERVER" value="http://bca-php-curl-tests.pagodabox.com/" />
+    </php>
     <testsuites>
       <testsuite>
         <directory>tests</directory>
