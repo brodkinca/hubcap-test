@@ -90,7 +90,7 @@ class Response
         if ($this->_error) {
             echo "=============================================<br/>\n";
             echo "<h3>Errors</h3>";
-            echo "<strong>Code:</strong> ".$this->_error['status']."<br/>\n";
+            echo "<strong>Code:</strong> ".$this->_error['code']."<br/>\n";
             echo "<strong>Message:</strong> ".$this->_error['message']."<br/>\n";
         }
 
