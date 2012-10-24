@@ -97,7 +97,7 @@ class Response
         echo "=============================================<br/>\n";
         echo "<h3>Info</h3>";
         echo "<pre>";
-        print_r($this->info);
+        print_r(!empty($this->_info));
         echo "</pre>";
     }
 
