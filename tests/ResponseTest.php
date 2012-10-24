@@ -58,4 +58,13 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals($this->dataResponse, $this->object);
     }
+
+    /**
+     * @covers BCA\CURL\Response::debug
+     */
+    public function test_debug()
+    {
+        $this->expectOutputRegex("/debug/i");
+        $this->assertNull($this->object->debug());
+    }
 }
