@@ -34,7 +34,7 @@ $data['auth_pass'] = @$_SERVER['PHP_AUTH_PW'];
 $data['headers'] = array();
 foreach ($_SERVER as $key => $value) {
     if (substr($key, 0, 6) === 'HTTP_X') {
-        $data['headers'][substr($key, 6)] = $value;
+        $data['headers'][substr($key, 5)] = $value;
     }
 }
 
