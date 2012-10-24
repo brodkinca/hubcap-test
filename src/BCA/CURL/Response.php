@@ -114,13 +114,19 @@ class Response
     /**
      * Was Request Successful
      *
+     * @param boolean $strict Requires a 200-level response whem truthy.
+     *
      * @return boolean
      */
-    public function success()
+    public function success($strict=false)
     {
         $status_code = substr($this->status(), 0, 1);
 
-        return ($status_code === '2' || $status_code === '3') ? true : false;
+        if ($strict) {
+            return ($status_code === '2') ? true : false;
+        } else {
+            return ($status_code === '2' || $status_code === '3') ? true : false;
+        }
     }
 
 }

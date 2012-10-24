@@ -81,11 +81,24 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
      */
     public function test_success()
     {
-        $this->assertFalse($this->object->success());
+        $info = $this->dataInfo;
+        $info['http_code'] = 500;
+        $response = new Response($this->dataResponse, $info);
+        $this->assertFalse($response->success());
 
         $info = $this->dataInfo;
         $info['http_code'] = 200;
         $response = new Response($this->dataResponse, $info);
         $this->assertTrue($response->success());
+
+        $info = $this->dataInfo;
+        $info['http_code'] = 300;
+        $response = new Response($this->dataResponse, $info);
+        $this->assertTrue($response->success());
+
+        $info = $this->dataInfo;
+        $info['http_code'] = 300;
+        $response = new Response($this->dataResponse, $info);
+        $this->assertFalse($response->success(true));
     }
 }
