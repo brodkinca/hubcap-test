@@ -37,8 +37,5 @@ $data['_POST'] = $_POST;
 $data['_PUT'] = $params;
 $data['_DELETE'] = $params;
 
-// Return all server data
-$data['_SERVER'] = $_SERVER;
-
 // Respond to request with JSON
 echo json_encode($data);
