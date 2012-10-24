@@ -31,7 +31,12 @@ $data['auth_user'] = @$_SERVER['PHP_AUTH_USER'];
 $data['auth_pass'] = @$_SERVER['PHP_AUTH_PW'];
 
 // Headers
-$data['headers'] = apache_request_headers();
+$data['headers'] = array();
+foreach ($_SERVER as $key => $value) {
+    if (substr($key, 0, 6) === 'HTTP_X') {
+        $data['headers'][substr($key, 6)] = $value;
+    }
+}
 
 // Fill in parameters
 parse_str(file_get_contents("php://input"), $params);
