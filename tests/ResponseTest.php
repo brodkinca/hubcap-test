@@ -17,9 +17,9 @@
 namespace BCA\CURL;
 
 /**
- * cURL Response Test Class
+ * cURL Response Class Tests
  *
- * @category  Tests
+ * @category  Test
  * @package   BCA/CURL
  * @author    Brodkin CyberArts <support@brodkinca.com>
  * @copyright 2012 Brodkin CyberArts.
