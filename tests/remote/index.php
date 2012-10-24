@@ -17,12 +17,11 @@
  */
 
 if (isset($_GET['http_code'])) {
-    $http_code = (int) $_GET['http_code'];
-} else {
-    $http_code = 200;
+    $http_code = $_GET['http_code'];
+    header("HTTP/1.0 $http_code Foobar");
 }
 
-header('Content-Type: application/json', true, $http_code);
+header('Content-Type: application/json');
 
 // Set a constant value against which we can test
 $data['foo'] = 'bar';
