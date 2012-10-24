@@ -16,13 +16,13 @@
  * @link      https://github.com/brodkinca/BCA-PHP-CURL
  */
 
-// HTTP Response Codes
 if (isset($_GET['http_code'])) {
-    http_response_code($_GET['http_code']);
+    $http_code = $_GET['http_code'];
+} else {
+    $http_code = 200;
 }
-$data['http_code'] = http_response_code();
 
-header('Content-Type: application/json', true);
+header('Content-Type: application/json', true, $http_code);
 
 // Set a constant value against which we can test
 $data['foo'] = 'bar';
