@@ -26,8 +26,12 @@ if (isset($_GET['http_code'])) {
 
 header('Content-Type: application/json');
 
-// Set a constant value against which we can test
-$data['foo'] = 'bar';
+// Authentication
+$data['auth_user'] = @$_SERVER['PHP_AUTH_USER'];
+$data['auth_pass'] = @$_SERVER['PHP_AUTH_PW'];
+
+// Headers
+$data['headers'] = apache_request_headers();
 
 // Fill in parameters
 parse_str(file_get_contents("php://input"), $params);
