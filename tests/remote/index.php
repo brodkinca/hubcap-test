@@ -33,7 +33,7 @@ $data['auth_pass'] = @$_SERVER['PHP_AUTH_PW'];
 // Headers
 $data['headers'] = array();
 foreach ($_SERVER as $key => $value) {
-    if (substr($key, 0, 6) === 'HTTP_X') {
+    if (substr($key, 0, 6) === 'HTTP_X' && $key !== 'HTTP_X_HTTP_METHOD_OVERRIDE') {
         $data['headers'][substr($key, 5)] = $value;
     }
 }
