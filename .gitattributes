@@ -1,4 +1,4 @@
 tests/ export-ignore
-phpunit.xml export-ignore
+phpunit.xml.dist export-ignore
 
 *.php indent
