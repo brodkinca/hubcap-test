@@ -38,6 +38,9 @@ foreach ($_SERVER as $key => $value) {
     }
 }
 
+// Cookies
+$data['_COOKIE'] = $_COOKIE;
+
 // Fill in parameters
 parse_str(file_get_contents("php://input"), $params);
 
