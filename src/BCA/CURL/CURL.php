@@ -32,87 +32,52 @@ namespace BCA\CURL;
  */
 class CURL
 {
-    protected $response;       // Contains the cURL response for debug
-    protected $session;             // Contains the cURL handler for a session
-    protected $url;                 // URL of the session
-    protected $options;   // Populates curl_setopt_array
-    protected $headers;   // Populates extra HTTP headers
-
-    public $error_code;             // Error code returned as an int
-    public $error_string;           // Error message returned as a string
-    public $info;                   // Returned after request (elapsed time, etc)
+    protected $session;
+    protected $url;
+    protected $options = array();
+    protected $headers = array();
+    protected $params = array();
 
     /**
      * Constructor
      *
-     * @param string $url Valid URL resource
+     * @param string $url    Valid URL resource
+     * @param array  $params Associative array of query parameters.
      */
-    public function __construct($url)
+    public function __construct($url, array $params=array())
     {
         if ( ! $this->_hasExtCurl()) {
             trigger_error('cURL Class - PHP was not built with cURL enabled. Rebuild PHP with --with-curl to use cURL.', E_USER_ERROR);
         }
 
-        // Set Default Values
-        $this->reset();
+        $this->params = $params;
 
         // Create Session
         $this->_startSession($url);
     }
 
     /**
-     * Simple Call Front Controller
-     *
-     * @param array $params  Array of query parameters.
-     * @param array $options Associative array cURL options.
-     *
-     * @return array
+     * Destructor
      */
-    public function __call($method, array $arguments)
+    public function __destruct()
     {
-        if (in_array($method, array('simple_get', 'simple_post', 'simple_put', 'simple_delete'))) {
-            // Take off the "simple_" and past get/post/put/delete to _simpleCall
-            $verb = str_replace('simple_', '', $method);
-            array_unshift($arguments, $verb);
-
-            return call_user_func_array(array($this, '_simpleCall'), $arguments);
-        }
+        curl_close($this->session);
     }
 
     /**
-     * Get File From FTP Server
+     * GET HTTP Request
      *
-     * @param string $url       URL of remote FTP host.
-     * @param string $file_path Path to file on remote host.
-     * @param string $username  FTP username.
-     * @param string $password  FTP password.
-     *
-     * @return mixed
+     * @return Response
      */
-    public function simpleFTPGet($url, $file_path, $username = '', $password = '')
+    public function get()
     {
-        // If there is no ftp:// or any protocol entered, add ftp://
-        if ( ! preg_match('!^(ftp|sftp)://! i', $url)) {
-            $url = 'ftp://' . $url;
+        // Convert parameter array to query string
+        if (!empty($this->params)) {
+            $params = http_build_query($this->params, null, '&');
+            $this->option(CURLOPT_URL, $this->url.'?'.$params);
         }
 
-        // Use an FTP login
-        if ($username != '') {
-            $auth_string = $username;
-
-            if ($password != '') {
-                $auth_string .= ':' . $password;
-            }
-
-            // Add the user auth string after the protocol
-            $url = str_replace('://', '://' . $auth_string . '@', $url);
-        }
-
-        // Add the filepath
-        $url .= $file_path;
-
-        $this->option(CURLOPT_BINARYTRANSFER, true);
-        $this->option(CURLOPT_VERBOSE, true);
+        $this->_method('get');
 
         return $this->_execute();
     }
@@ -120,25 +85,17 @@ class CURL
     /**
      * POST HTTP Request
      *
-     * @param array $params  Array of query parameters.
-     * @param array $options Array of cURL options.
-     *
-     * @return mixed
+     * @return Response
      */
-    public function post(array $params = array(), array $options = array())
+    public function post()
     {
-        // If its an array (instead of a query string) then format it correctly
-        if (is_array($params)) {
-            $params = http_build_query($params, null, '&');
-        }
+        // Convert parameter array to query string
+        $params = http_build_query($this->params, null, '&');
+        $this->option(CURLOPT_POSTFIELDS, $params);
 
-        // Add in the specific options provided
-        $this->options($options);
-
-        $this->method('post');
+        $this->_method('post');
 
         $this->option(CURLOPT_POST, true);
-        $this->option(CURLOPT_POSTFIELDS, $params);
 
         return $this->_execute();
     }
@@ -146,23 +103,15 @@ class CURL
     /**
      * PUT HTTP Request
      *
-     * @param array $params  Array of query parameters.
-     * @param array $options Array of cURL options.
-     *
-     * @return mixed
+     * @return Response
      */
-    public function put(array $params = array(), array $options = array())
+    public function put()
     {
-        // If its an array (instead of a query string) then format it correctly
-        if (is_array($params)) {
-            $params = http_build_query($params, null, '&');
-        }
-
-        // Add in the specific options provided
-        $this->options($options);
-
-        $this->method('put');
+        // Convert parameter array to query string
+        $params = http_build_query($this->params, null, '&');
         $this->option(CURLOPT_POSTFIELDS, $params);
+
+        $this->_method('put');
 
         // Overrides $_POST with PUT data
         $this->option(CURLOPT_HTTPHEADER, array('X-HTTP-Method-Override: PUT'));
@@ -173,26 +122,34 @@ class CURL
     /**
      * DELETE HTTP Request
      *
-     * @param array $params  Array of query parameters.
-     * @param array $options Array of cURL options.
-     *
-     * @return mixed
+     * @return Response
      */
-    public function delete(array $params, array $options = array())
+    public function delete()
     {
-        // If its an array (instead of a query string) then format it correctly
-        if (is_array($params)) {
-            $params = http_build_query($params, null, '&');
-        }
-
-        // Add in the specific options provided
-        $this->options($options);
-
-        $this->method('delete');
-
+        // Convert parameter array to query string
+        $params = http_build_query($this->params, null, '&');
         $this->option(CURLOPT_POSTFIELDS, $params);
 
+        $this->_method('delete');
+
         return $this->_execute();
+    }
+
+    /**
+     * Set HTTP username and password
+     *
+     * @param string $username Username.
+     * @param string $password Password.
+     * @param string $type     Any valid value for CURLOPT_HTTPAUTH.
+     *
+     * @return self
+     */
+    public function auth($username, $password = '', $type = 'any')
+    {
+        $this->option(CURLOPT_HTTPAUTH, constant('CURLAUTH_' . strtoupper($type)));
+        $this->option(CURLOPT_USERPWD, $username . ':' . $password);
+
+        return $this;
     }
 
     /**
@@ -223,83 +180,7 @@ class CURL
      */
     public function header($header, $content = null)
     {
-        $this->headers[] = $content ? $header . ': ' . $content : $header;
-
-        return $this;
-    }
-
-    /**
-     * Set HTTP Method
-     *
-     * @param string $method Valid HTTP method.
-     *
-     * @return self
-     */
-    public function method($method)
-    {
-        $this->options[CURLOPT_CUSTOMREQUEST] = strtoupper($method);
-
-        return $this;
-    }
-
-    /**
-     * Set HTTP username and password
-     *
-     * @param string $username Username.
-     * @param string $password Password.
-     * @param string $type     Any valid value for CURLOPT_HTTPAUTH.
-     *
-     * @return self
-     */
-    public function auth($username = '', $password = '', $type = 'any')
-    {
-        $this->option(CURLOPT_HTTPAUTH, constant('CURLAUTH_' . strtoupper($type)));
-        $this->option(CURLOPT_USERPWD, $username . ':' . $password);
-
-        return $this;
-    }
-
-    /**
-     * Set Proxy Server
-     *
-     * @param string  $url      URL of proxy server, if required.
-     * @param integer $port     Port number of proxy server, if required.
-     * @param string  $username Proxy username, if required.
-     * @param string  $password Proxy password, if required.
-     *
-     * @return self
-     */
-    public function proxy($url = '', $port = 80, $username = '', $password = '')
-    {
-        $this->option(CURLOPT_HTTPPROXYTUNNEL, true);
-        $this->option(CURLOPT_PROXY, $url . ':' . $port);
-
-        $username AND $this->option(CURLOPT_PROXYUSERPWD, $username . ':' . $password);
-
-        return $this;
-    }
-
-    /**
-     * Set SSL Options
-     *
-     * @param boolean $verify_peer  Require a valid certificate.
-     * @param integer $verify_host  Require a hostname match of certificate.
-     * @param string  $path_to_cert Local path to certificate(s) file.
-     *
-     * @return self
-     */
-    public function ssl($verify_peer = true, $verify_host = 2, $path_to_cert = null)
-    {
-        if ($verify_peer) {
-            $this->option(CURLOPT_SSL_VERIFYPEER, true);
-            $this->option(CURLOPT_SSL_VERIFYHOST, $verify_host);
-            if (isset($path_to_cert)) {
-                $path_to_cert = realpath($path_to_cert);
-                $this->option(CURLOPT_CAINFO, $path_to_cert);
-            }
-        } else {
-            $this->option(CURLOPT_SSL_VERIFYPEER, false);
-        }
+        $this->headers[] = ($content) ? $header.': '.$content : $header;
 
         return $this;
     }
@@ -324,30 +205,62 @@ class CURL
     }
 
     /**
-     * Print Debug Message to Screen
+     * Set a Parameter
      *
-     * @return null
+     * @param string $key   Parameter key on which value should be set.
+     * @param string $value Key on which value should be set.
+     *
+     * @return self
      */
-    public function debug()
+    public function param($key, $value)
     {
-        echo "=============================================<br/>\n";
-        echo "<h2>CURL Test</h2>\n";
-        echo "=============================================<br/>\n";
-        echo "<h3>Response</h3>\n";
-        echo "<code>" . nl2br(htmlentities($this->last_response)) . "</code><br/>\n\n";
+        $this->params["$key"] = $value;
 
-        if ($this->error_string) {
-            echo "=============================================<br/>\n";
-            echo "<h3>Errors</h3>";
-            echo "<strong>Code:</strong> " . $this->error_code . "<br/>\n";
-            echo "<strong>Message:</strong> " . $this->error_string . "<br/>\n";
+        return $this;
+    }
+
+    /**
+     * Set Multiple Parameters via Array
+     *
+     * @param array $params Associative array of parameters.
+     *
+     * @return self
+     */
+    public function params(array $params)
+    {
+        $this->params = array_merge($params, $this->params);
+
+        return $this;
+    }
+
+    /**
+     * Force SSL Usage and Set SSL Options
+     *
+     * @param boolean $verify_peer  Require a valid certificate.
+     * @param integer $verify_host  Require a hostname match of certificate.
+     * @param string  $path_to_cert Local path to certificate(s) file.
+     *
+     * @return self
+     */
+    public function ssl($verify_peer = true, $verify_host = 2, $path_to_cert = null)
+    {
+        if (strpos($this->url, 'http://') === 0) {
+            $this->url = str_replace("http", "https", $this->url, $max = 1);
+            $this->option(CURLOPT_URL, $this->url);
         }
 
-        echo "=============================================<br/>\n";
-        echo "<h3>Info</h3>";
-        echo "<pre>";
-        print_r($this->info);
-        echo "</pre>";
+        if ($verify_peer) {
+            $this->option(CURLOPT_SSL_VERIFYPEER, true);
+            $this->option(CURLOPT_SSL_VERIFYHOST, $verify_host);
+            if (isset($path_to_cert)) {
+                $path_to_cert = realpath($path_to_cert);
+                $this->option(CURLOPT_CAINFO, $path_to_cert);
+            }
+        } else {
+            $this->option(CURLOPT_SSL_VERIFYPEER, false);
+        }
+
+        return $this;
     }
 
     /**
@@ -358,54 +271,42 @@ class CURL
     private function _execute()
     {
         // Set two default options, and merge any extra ones in
-        if ( ! isset($this->options[CURLOPT_TIMEOUT])) {
-            $this->options[CURLOPT_TIMEOUT] = 30;
+        if (!$this->_hasOption(CURLOPT_TIMEOUT)) {
+            $this->option(CURLOPT_TIMEOUT, 30);
         }
-        if ( ! isset($this->options[CURLOPT_RETURNTRANSFER])) {
-            $this->options[CURLOPT_RETURNTRANSFER] = true;
+        if (!$this->_hasOption(CURLOPT_RETURNTRANSFER)) {
+            $this->option(CURLOPT_RETURNTRANSFER, true);
         }
-        if ( ! isset($this->options[CURLOPT_FAILONERROR])) {
-            $this->options[CURLOPT_FAILONERROR] = true;
+        if (!$this->_hasOption(CURLOPT_FAILONERROR)) {
+            $this->option(CURLOPT_FAILONERROR, true);
         }
 
         // Only set follow location if not running securely
-        if ( ! ini_get('safe_mode') && ! ini_get('open_basedir')) {
-            // Ok, follow location is not set already so lets set it to true
-            if ( ! isset($this->options[CURLOPT_FOLLOWLOCATION])) {
-                $this->options[CURLOPT_FOLLOWLOCATION] = true;
+        if (!ini_get('safe_mode') && !ini_get('open_basedir')) {
+            if (!$this->_hasOption(CURLOPT_FOLLOWLOCATION)) {
+                $this->option(CURLOPT_FOLLOWLOCATION, true);
             }
         }
 
-        if ( ! empty($this->headers)) {
+        if (!empty($this->headers)) {
             $this->option(CURLOPT_HTTPHEADER, $this->headers);
         }
 
-        $this->options();
+        curl_setopt_array($this->session, $this->options);
 
         // Execute the request & and hide all output
-        $this->response = curl_exec($this->session);
-        $this->info = curl_getinfo($this->session);
+        $response = curl_exec($this->session);
+        $info = curl_getinfo($this->session);
 
-        if ($this->response === false) {
+        if ($response === false) {
             // Request failed
-            $errno = curl_errno($this->session);
-            $error = curl_error($this->session);
+            $error['code'] = curl_errno($this->session);
+            $error['message'] = curl_error($this->session);
 
-            curl_close($this->session);
-            $this->_reset();
-
-            $this->error_code = $errno;
-            $this->error_string = $error;
-
-            return false;
+            return new Response($response, $info, $error);
 
         } else {
-            // Request successful
-            curl_close($this->session);
-            $this->last_response = $this->response;
-            $this->_reset();
-
-            return $this->last_response;
+            return new Response($response, $info);
         }
     }
 
@@ -420,32 +321,57 @@ class CURL
     }
 
     /**
-     * Handler for Simple Calls
+     * Does Instance Have a Given Option Set?
      *
-     * @param string $method  Valid HTTP method
-     * @param string $url     URL resource to query
-     * @param array  $params  Array of query parameters
-     * @param array  $options Array cURL options
+     * @param int $code Integer representation of cURL option.
      *
-     * @return array
+     * @return boolean
      */
-    private function _simpleCall($method, $url, array $params = array(), array $options = array())
+    private function _hasOption($code)
     {
-        // Get acts differently, as it doesnt accept parameters in the same way
-        if ($method === 'get') {
-            // If a URL is provided, create new session
-            $this->_startSession($url.($params ? '?'.http_build_query($params, null, '&') : ''));
-        } else {
-            // If a URL is provided, create new session
-            $this->_startSession($url);
+        return isset($this->options[$code]);
+    }
 
-            $this->{$method}($params);
+    /**
+     * Does Instance Have a Given Option Set?
+     *
+     * @param string $key Key to check in parameter array.
+     *
+     * @return boolean
+     */
+    private function _hasParam($key)
+    {
+        return isset($this->params["$key"]);
+    }
+
+    /**
+     * Set HTTP Method
+     *
+     * @param string $method Valid HTTP method.
+     *
+     * @return self
+     */
+    private function _method($method)
+    {
+        $this->option(CURLOPT_CUSTOMREQUEST, strtoupper($method));
+
+        return $this;
+    }
+
+    /**
+     * Set cURL Multiple Options by Array
+     *
+     * @param array $options Associative array of options and values.
+     *
+     * @return self
+     */
+    private function _options(array $options)
+    {
+        foreach ($options as $key => $value) {
+            $this->option($key, $value);
         }
 
-        // Add in the specific options provided
-        $this->options($options);
-
-        return $this->_execute();
+        return $this;
     }
 
     /**
@@ -461,21 +387,6 @@ class CURL
         $this->session = curl_init($this->url);
 
         return $this;
-    }
-
-    /**
-     * Set Values to Defaults
-     *
-     * @return null
-     */
-    private function _reset()
-    {
-        $this->response = '';
-        $this->headers = array();
-        $this->options = array();
-        $this->error_code = null;
-        $this->error_string = '';
-        $this->session = null;
     }
 
 }
