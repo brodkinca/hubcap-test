@@ -28,8 +28,25 @@ namespace BCA\CURL;
  */
 class Response
 {
+    /**
+     * Raw Response Data
+     *
+     * @var string
+     */
     private $_response;
+
+    /**
+     * cURL Stats Returned by curl_info()
+     *
+     * @var array
+     */
     private $_info;
+
+    /**
+     * cURL Error Information
+     *
+     * @var array
+     */
     private $_error;
 
     /**
