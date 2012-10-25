@@ -32,10 +32,39 @@ namespace BCA\CURL;
  */
 class CURL
 {
+    /**
+     * cURL Session Handler
+     *
+     * @var curl_init()
+     */
     protected $session;
+
+    /**
+     * Base URL
+     *
+     * @var string
+     */
     protected $url;
+
+    /**
+     * cURL Options
+     *
+     * @var array
+     */
     protected $options = array();
+
+    /**
+     * HTTP Headers
+     *
+     * @var array
+     */
     protected $headers = array();
+
+    /**
+     * Query Parameters
+     *
+     * @var array
+     */
     protected $params = array();
 
     /**
