@@ -309,6 +309,12 @@ class CURL
         if (!$this->_hasOption(CURLOPT_FAILONERROR)) {
             $this->option(CURLOPT_FAILONERROR, true);
         }
+        if (!$this->_hasOption(CURLOPT_USERAGENT)) {
+            $this->option(
+                CURLOPT_USERAGENT,
+                'BCA cURL http://git.io/kTMBLg'
+            );
+        }
 
         // Only set follow location if not running securely
         if (!ini_get('safe_mode') && !ini_get('open_basedir')) {
