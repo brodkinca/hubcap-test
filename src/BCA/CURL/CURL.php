@@ -274,7 +274,8 @@ class CURL
     public function ssl($verify_peer = true, $verify_host = 2, $path_to_cert = null)
     {
         if (strpos($this->url, 'http://') === 0) {
-            $this->url = str_replace("http", "https", $this->url, $max = 1);
+            $stop_at = 1;
+            $this->url = str_replace("http", "https", $this->url, $stop_at);
             $this->option(CURLOPT_URL, $this->url);
         }
 
