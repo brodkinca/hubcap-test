@@ -24,7 +24,8 @@ https://github.com/brodkinca/BCA-PHP-CURL
 
 Simple requests can be constructed with just a URL and a method.
 ```php
-$data = new CURL('http://example.com/')->get();
+$request = new CURL('http://example.com/');
+$response = $request->get();
 ```
 More complex requests build upon that concept by adding methods to the request.
 ```php
