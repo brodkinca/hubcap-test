@@ -49,9 +49,9 @@ class CURLTest extends \PHPUnit_Framework_TestCase
         $good_url = new CURL(REMOTE_TEST_SERVER);
         $response = $good_url->get();
         $this->assertInstanceOf('\BCA\CURL\Response', $response);
+        $this->assertTrue($response->success());
         $expected = file_get_contents(REMOTE_TEST_SERVER);
         $this->assertEquals($expected, $response);
-        $this->assertTrue($response->success());
     }
 
     /**
@@ -75,9 +75,17 @@ class CURLTest extends \PHPUnit_Framework_TestCase
         $good_url = new CURL(REMOTE_TEST_SERVER);
         $response = $good_url->post();
         $this->assertInstanceOf('\BCA\CURL\Response', $response);
+        $this->assertTrue($response->success());
         $expected = file_get_contents(REMOTE_TEST_SERVER);
         $this->assertEquals($expected, $response);
+
+        $good_url = new CURL(REMOTE_TEST_SERVER);
+        $response = $good_url->post('foobar');
+        $this->assertInstanceOf('\BCA\CURL\Response', $response);
         $this->assertTrue($response->success());
+        $response = json_decode($response);
+        $this->assertEquals('foobar', $response->_RAW);
+
     }
 
     /**
@@ -101,9 +109,16 @@ class CURLTest extends \PHPUnit_Framework_TestCase
         $good_url = new CURL(REMOTE_TEST_SERVER);
         $response = $good_url->put();
         $this->assertInstanceOf('\BCA\CURL\Response', $response);
+        $this->assertTrue($response->success());
         $expected = file_get_contents(REMOTE_TEST_SERVER);
         $this->assertEquals($expected, $response);
+
+        $good_url = new CURL(REMOTE_TEST_SERVER);
+        $response = $good_url->put('foobar');
+        $this->assertInstanceOf('\BCA\CURL\Response', $response);
         $this->assertTrue($response->success());
+        $response = json_decode($response);
+        $this->assertEquals('foobar', $response->_RAW);
     }
 
     /**
@@ -127,9 +142,9 @@ class CURLTest extends \PHPUnit_Framework_TestCase
         $good_url = new CURL(REMOTE_TEST_SERVER);
         $response = $good_url->delete();
         $this->assertInstanceOf('\BCA\CURL\Response', $response);
+        $this->assertTrue($response->success());
         $expected = file_get_contents(REMOTE_TEST_SERVER);
         $this->assertEquals($expected, $response);
-        $this->assertTrue($response->success());
     }
 
     /**

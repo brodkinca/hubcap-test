@@ -114,13 +114,19 @@ class CURL
     /**
      * POST HTTP Request
      *
+     * @param string $data Raw data to send in request.
+     *
      * @return Response
      */
-    public function post()
+    public function post($data=null)
     {
-        // Convert parameter array to query string
-        $params = http_build_query($this->params, null, '&');
-        $this->option(CURLOPT_POSTFIELDS, $params);
+        if (!empty($data)) {
+            $this->option(CURLOPT_POSTFIELDS, $data);
+        } else {
+            // Convert parameter array to query string
+            $params = http_build_query($this->params, null, '&');
+            $this->option(CURLOPT_POSTFIELDS, $params);
+        }
 
         $this->_method('post');
 
@@ -132,13 +138,19 @@ class CURL
     /**
      * PUT HTTP Request
      *
+     * @param string $data Raw data to send in place of parameters.
+     *
      * @return Response
      */
-    public function put()
+    public function put($data=null)
     {
-        // Convert parameter array to query string
-        $params = http_build_query($this->params, null, '&');
-        $this->option(CURLOPT_POSTFIELDS, $params);
+        if (!empty($data)) {
+            $this->option(CURLOPT_POSTFIELDS, $data);
+        } else {
+            // Convert parameter array to query string
+            $params = http_build_query($this->params, null, '&');
+            $this->option(CURLOPT_POSTFIELDS, $params);
+        }
 
         $this->_method('put');
 
