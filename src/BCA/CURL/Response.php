@@ -9,7 +9,7 @@
  * @package   BCA/CURL
  * @author    Brodkin CyberArts <support@brodkinca.com>
  * @copyright 2012 Brodkin CyberArts.
- * @license   All rights reserved.
+ * @license   GPL-3.0 http://www.gnu.org/licenses/gpl.txt
  * @version   GIT: $Id$
  * @link      https://github.com/brodkinca/BCA-PHP-CURL
  */
@@ -23,7 +23,7 @@ namespace BCA\CURL;
  * @package   BCA/CURL
  * @author    Brodkin CyberArts <support@brodkinca.com>
  * @copyright 2012 Brodkin CyberArts.
- * @license   All rights reserved.
+ * @license   GPL-3.0 http://www.gnu.org/licenses/gpl.txt
  * @link      https://github.com/brodkinca/BCA-PHP-CURL
  */
 class Response
