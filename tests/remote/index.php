@@ -42,12 +42,14 @@ foreach ($_SERVER as $key => $value) {
 $data['_COOKIE'] = $_COOKIE;
 
 // Fill in parameters
-parse_str(file_get_contents("php://input"), $params);
+$raw_post = file_get_contents("php://input");
+parse_str($raw_post, $params);
 
 $data['_GET'] = $_GET;
 $data['_POST'] = $_POST;
 $data['_PUT'] = $params;
 $data['_DELETE'] = $params;
+$data['_RAW'] = $raw_post;
 
 // Respond to request with JSON
 echo json_encode($data);
