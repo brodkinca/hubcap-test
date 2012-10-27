@@ -2,6 +2,8 @@
 
 Work with remote servers via cURL much easier than using the native PHP bindings.
 
+[![Build Status](https://secure.travis-ci.org/brodkinca/BCA-PHP-CURL.png)](http://travis-ci.org/brodkinca/BCA-PHP-CURL)
+
 ## Requirements
 
 1. PHP 5.3+
